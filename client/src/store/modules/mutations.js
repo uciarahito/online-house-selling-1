@@ -13,6 +13,9 @@ export const Mutations = {
   dataHouses: (state, payload) => {
     state.dataHouses = payload
   },
+  detailHouse: (state, payload) => {
+    state.detailHouse = payload
+  },
   newHouse: (state, payload) => {
     state.dataHouses.push(payload)
   },

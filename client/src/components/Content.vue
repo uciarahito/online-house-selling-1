@@ -276,9 +276,10 @@ export default {
 }
 
 .image {
-  width: auto;
-  height: 220px;
-  display: block;
+  width: 260px;
+  height: 200px;
+  margin: 0px;
+  padding: 0px;
 }
 
 .clearfix:before,

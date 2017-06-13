@@ -11,6 +11,7 @@ export const store = new Vuex.Store({
     user: [],
     signIn: [],
     dataHouses: [],
+    detailHouse: [],
     marker: {
       lat: -6.2372963,
       lng: 106.7904324

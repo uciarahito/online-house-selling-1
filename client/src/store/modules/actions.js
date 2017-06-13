@@ -43,6 +43,18 @@ export const Actions = {
       console.log('error, masuk ke catch');
     })
   },
+  detailHouse: ({commit}, payload) => {
+    axios.get(`http://localhost:3000/detailhouse/${payload}`)
+    .then(response => {
+      console.log('Action DetailHouse');
+      console.log(response.data);
+      commit('detailHouse', response.data)
+    })
+    .catch(error => {
+      console.log(error);
+      console.log('error, masuk ke catch');
+    })
+  },
   createHouse: ({commit}, payload) => {
     axios.post('http://localhost:3000/createhouse', {
       title: payload.title,
