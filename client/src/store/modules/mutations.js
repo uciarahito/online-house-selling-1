@@ -23,17 +23,12 @@ export const Mutations = {
     state.detailHouse = payload
   },
   deleteHouse: (state, payload) => {
-    // state.dataHouses = payload
+    // console.log('Mutations payload ', payload);
 
-    let houses = state.dataHouses
-    console.log('apa ini?????');
-    // console.log(houses.indexOf(payload));
-    houses.splice(houses.indexOf(payload), 1)
-    // if (houses.length <= 2) {
-    //   houses.splice(houses.indexOf(payload), 1)
-    // } else {
-    //   houses.splice(houses.indexOf(payload), 1)
-    // }
+    let newHouses = state.dataHouses.filter(house => house._id !== payload._id)
+    console.log('its  newHouses ', newHouses);
+    console.log('its state houses', state.dataHouses);
+    state.dataHouses = newHouses
   },
   setMarker(state, coordinateObj) {
     state.marker.lng = coordinateObj.lng;
