@@ -78,5 +78,41 @@ export const Actions = {
       console.log(error);
       console.log('error, masuk ke catch');
     })
+  },
+  editHouse: ({commit}, payload) => {
+    axios.put(`http://localhost:3000/editHouse/${payload.id}`, {
+      title: payload.title,
+      description: payload.desc,
+      owner: payload.owner,
+      phone: payload.phone,
+      size: payload.size,
+      price: payload.price,
+      image: payload.image,
+      location: payload.location,
+      latlong: payload.latlong,
+      city: payload.city,
+      state: payload.state
+    })
+    .then(response => {
+      console.log('Action edit House');
+      console.log(response.data);
+      commit('editHouse', response.data)
+    })
+    .catch(error => {
+      console.log(error);
+      console.log('error, masuk ke catch');
+    })
+  },
+  deleteHouse: ({commit}, payload) => {
+    axios.delete(`http://localhost:3000/deleteHouse/${payload}`)
+    .then(response => {
+      console.log('Action delete House');
+      console.log(response.data);
+      commit('deleteHouse', response.data)
+    })
+    .catch(error => {
+      console.log(error);
+      console.log('error, masuk ke catch');
+    })
   }
 }

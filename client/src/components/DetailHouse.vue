@@ -1,7 +1,6 @@
 <template lang="html">
   <el-row :gutter="20" type="flex" class="row-bg" justify="center">
 
-
     <el-col :span="13">
       <div style="text-align:-webkit-auto;margin-top:15px;" class="teks-bawah">
         <span style="color:blue;" @click="backToContent">homepage</span>&nbsp;&nbsp;<span>/</span>&nbsp;&nbsp;<span>detail house</span>
@@ -28,14 +27,14 @@
           <span>{{detailHouse.description}}</span>
           <hr style="border-color:white;margin-bottom:10px;">
           <span><u><b>Location</b></u></span><br>
-          <div v-model="map_latlong">
+          <div v-model="this.map_latlong">
             <gmap-map
-              :center="marker"
+              :center="markerDetail"
               :zoom="15"
               scrollwheel="false"
               style="width: 100%;height: 300px">
               <gmap-marker
-                :position="marker">
+                :position="markerDetail">
               </gmap-marker>
             </gmap-map>
           </div>
@@ -67,10 +66,87 @@
               </el-col>
             </el-row>
           </el-button>
+          <el-row :gutter="20" style="margin-top:10px;">
+            <el-col :span="5">
+              <el-button type="warning" icon="edit" @click="viewFormEditHouse">Edit</el-button>
+            </el-col>
+            <el-col :span="5">
+              <el-button type="danger" icon="delete" @click="deleteHouse">Delete</el-button>
+            </el-col>
+          </el-row>
         </div>
       </div>
-
     </el-col>
+
+    <el-dialog title="Edit Question" v-model="dialogFormVisibleEditHouse">
+      <el-form :model="formEditHouse" :rules="rules" ref="formEditHouse" label-width="120px" class="demo-ruleForm" style="padding:0px 20px 0px 5px;margin-top:10px;">
+        <el-form-item label="Title" prop="title">
+          <el-input v-model="formEditHouse.title"></el-input>
+        </el-form-item>
+        <el-form-item label="Description" prop="desc">
+          <el-input type="textarea" v-model="formEditHouse.desc"></el-input>
+        </el-form-item>
+        <el-form-item label="Owner" prop="owner">
+          <el-input v-model="formEditHouse.owner"></el-input>
+        </el-form-item>
+        <el-form-item label="Phone" prop="phone">
+          <el-input v-model="formEditHouse.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="Size" prop="size">
+          <el-input v-model="formEditHouse.size"></el-input>
+        </el-form-item>
+        <el-form-item label="Price" prop="price">
+          <el-input v-model="formEditHouse.price"></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="Upload Image">
+          <el-input @change="uploadImage" type="file" accept="image/*"></el-input>
+        </el-form-item> -->
+        <el-form-item label="Image">
+          <el-card :body-style="{ padding: '10px' }" style="height:auto;">
+            <el-upload
+              class="upload-demo"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-change="handleChange"
+              :file-list="fileList3">
+              <el-button size="small" type="primary">Click to upload</el-button>
+              <div slot="tip" class="el-upload__tip">jpg/png files with a size less than 500kb</div>
+            </el-upload>
+          </el-card>
+        </el-form-item>
+        <el-form-item label="Location">
+          <el-input v-model="formEditHouse.location"></el-input>
+        </el-form-item>
+        <el-form-item label="City" prop="city">
+          <el-input v-model="formEditHouse.city"></el-input>
+        </el-form-item>
+        <el-form-item label="State" prop="state">
+          <el-input v-model="formEditHouse.state"></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="Latlong">
+          <el-input :value="marker.lat+','+marker.lng"></el-input>
+        </el-form-item> -->
+        <el-card :body-style="{ padding: '10px' }">
+          <gmap-map
+            :center="stateMarker"
+            :zoom="18"
+            :clickable="true"
+            scrollwheel="false"
+            style="width: 100%; height: 500px"
+            v-on:click="mapClicked">
+              <gmap-marker
+                :position="stateMarker"
+                :clickable="true"
+                :draggable="true"
+                @g-click="center">
+              </gmap-marker>
+          </gmap-map>
+        </el-card>
+        <el-form-item style="margin-left:0px;margin-top:15px;">
+          <el-button type="primary" @click="submitFormEditHouse('formEditHouse')">Edit</el-button>
+          <el-button @click="resetForm('formEditHouse')">Reset</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -107,17 +183,57 @@ function postFacebook(status) {
   });
 }
 
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  props: ['id'],
+  props: ['id', 'index'],
   data() {
     return {
       center: {
         lat: -6.2372963,
         lng: 106.7904324
       },
-      marker: {},
-      map_latlong: ''
+      markerDetail: {},
+      map_latlong: '',
+      dialogFormVisibleEditHouse: false,
+      formEditHouse: {
+        title: '',
+        desc: '',
+        owner: '',
+        phone: '',
+        size: '',
+        price: '',
+        location: '',
+        latlong: '',
+        city: '',
+        state: ''
+      },
+      rules: {
+        title: [
+          { required: true, message: 'Please input the title', trigger: 'blur' }
+        ],
+        desc: [
+          { required: true, message: 'Please input the description', trigger: 'blur' }
+        ],
+        owner: [
+          { required: true, message: 'Please input the owner', trigger: 'blur' }
+        ],
+        phone: [
+          { required: true, message: 'Please input the phone', trigger: 'blur' }
+        ],
+        size: [
+          { required: true, message: 'Please input the size', trigger: 'blur' }
+        ],
+        price: [
+          { required: true, message: 'Please input the price', trigger: 'blur' }
+        ],
+        city: [
+          { required: true, message: 'Please input the city', trigger: 'blur' }
+        ],
+        state: [
+          { required: true, message: 'Please input the state', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
@@ -125,24 +241,116 @@ export default {
       this.$router.push('/')
     },
     parseCoordinate() {
-      // console.log('Ini latlong');
-      // console.log(this.detailHouse.latlong);
-      let parsedCoor = this.map_latlong.split(",");
-      this.marker.lat = Number(parsedCoor[0]);
-      this.marker.lng = Number(parsedCoor[1]);
+      let parsedCoor = this.detailHouse.latlong.split(',');
+      this.markerDetail.lat = Number(parsedCoor[0]);
+      this.markerDetail.lng = Number(parsedCoor[1]);
+    },
+    handleChange(file, fileList) {
+      this.fileList3 = fileList.slice(-3);
+    },
+    viewFormEditHouse() {
+      this.dialogFormVisibleEditHouse = true
+      this.formEditHouse.title = this.detailHouse.title
+      this.formEditHouse.desc = this.detailHouse.description,
+      this.formEditHouse.owner = this.detailHouse.owner,
+      this.formEditHouse.phone = this.detailHouse.phone,
+      this.formEditHouse.size = this.detailHouse.size,
+      this.formEditHouse.price = this.detailHouse.price,
+      this.formEditHouse.location = this.detailHouse.location,
+      this.formEditHouse.city = this.detailHouse.city,
+      this.formEditHouse.state = this.detailHouse.state
+    },
+    deleteHouse() {
+      if (confirm(`Are you sure want to delete ${this.detailHouse.title}?`)) {
+        this.$store.dispatch('deleteHouse', this.id)
+        this.$router.push('/')
+      }
+    },
+    submitFormEditHouse(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let payload = {
+            id: this.id,
+            title: this.formEditHouse.title,
+            description: this.formEditHouse.desc,
+            owner: this.formEditHouse.owner,
+            phone: this.formEditHouse.phone,
+            size: this.formEditHouse.size,
+            price: this.formEditHouse.price,
+            image: this.fileList3[0].url,
+            location: this.formEditHouse.location,
+            latlong: `${this.marker.lat},${this.marker.lng}`,
+            city: this.formEditHouse.city,
+            state: this.formEditHouse.state
+          }
+          console.log('payload edit house');
+          console.log(payload);
+          this.$store.dispatch('editHouse', payload)
+
+          // this.map_latlong = payload.latlong
+          // let parsedCoor = this.map_latlong .split(',');
+          // this.markerDetail.lat = Number(parsedCoor[0]);
+          // this.markerDetail.lng = Number(parsedCoor[1]);
+
+          // this.parseCoordinate()
+          this.formEditHouse.title = ''
+          this.formEditHouse.desc = ''
+          this.formEditHouse.owner = ''
+          this.formEditHouse.phone = ''
+          this.formEditHouse.size = ''
+          this.formEditHouse.price = ''
+          this.formEditHouse.location = ''
+          this.formEditHouse.latlong = ''
+          this.formEditHouse.city = ''
+          this.formEditHouse.state = ''
+          this.dialogFormVisibleEditHouse = false
+        } else {
+          console.log('error edit house!!');
+          return false;
+        }
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
+    mapClicked(mouseArgs) {
+      let coordinate = {
+        lat: mouseArgs.latLng.lat(),
+        lng: mouseArgs.latLng.lng()
+      }
+      this.$store.commit('setMarker', coordinate)
     }
   },
   computed: {
     detailHouse() {
       return this.$store.state.detailHouse
+    },
+    ...mapGetters({
+      statusLogin: 'isLogin'
+    }),
+    marker() {
+      return this.$store.getters.marker
+    },
+    stateMarker() {
+      return this.$store.getters.marker
     }
   },
   created() {
     this.$store.dispatch('detailHouse', this.id)
     this.map_latlong = this.detailHouse.latlong
+
+    let parsedCoor = this.detailHouse.latlong.split(',');
+    this.markerDetail.lat = Number(parsedCoor[0]);
+    this.markerDetail.lng = Number(parsedCoor[1]);
+
+    console.log('ini index');
+    console.log(this.index);
+    // console.log(this.detailHouse.latlong.split(','));
+    // console.log(parsedCoor[0]);
+    // console.log(parsedCoor[1]);
   },
   mounted(){
-    this.parseCoordinate()
+    // this.parseCoordinate()
   }
 }
 </script>

@@ -30,8 +30,8 @@
                   <img :src="house.image" class="image">
                   <div style="padding: 14px;">
 
-                    <router-link v-if="house.title.length >= 20" :to="'detailhouse/'+house._id">{{ house.title.slice(0, 20) }}...</router-link>
-                    <router-link v-else :to="'detailhouse/'+house._id">{{house.title}}</router-link>
+                    <router-link v-if="house.title.length >= 20" :to="'detailhouse/'+house._id" :index="index">{{ house.title.slice(0, 20) }}...</router-link>
+                    <router-link v-else :to="'detailhouse/'+house._id" :index="index">{{house.title}}</router-link>
                     <br>
                     <el-row style="margin:10px 0px 0px 0px;">
                       <span class="mini-title">Rp. {{ house.price }}</span>
@@ -82,9 +82,9 @@
           <el-form-item label="Price" prop="price">
             <el-input v-model="formNewHouse.price"></el-input>
           </el-form-item>
-          <el-form-item label="Upload Image">
+          <!-- <el-form-item label="Upload Image">
             <el-input @change="uploadImage" type="file" accept="image/*"></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="Image">
             <el-card :body-style="{ padding: '10px' }" style="height:auto;">
               <el-upload
